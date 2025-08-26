@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Happy Birthday ❤</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: #000;
+      font-family: 'Segoe UI', sans-serif;
+      color: white;
+      height: 100%;
+      overflow-x: hidden;
+    }
+
+    #fireworks {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 30px 20px;
+      box-sizing: border-box;
+    }
+
+    .balloons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      animation: float 2s infinite ease-in-out alternate;
+    }
+
+    .balloon {
+      background-color: #e91e63;
+      color: white;
+      font-size: 2em;
+      width: 60px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 15px white;
+    }
+
+    @keyframes float {
+      from { transform: translateY(0); }
+      to { transform: translateY(-20px); }
+    }
+
+    .message {
+      font-size: 2em;
+      margin: 20px auto;
+      max-width: 90%;
+      text-shadow: 2px 2px 10px #ff0080;
+    }
+
+    img {
+      width: 200px;
+      max-width: 90%;
+      margin: 20px auto;
+      border-radius: 15px;
+      box-shadow: 0 0 15px white;
+      display: block;
+    }
+
+    p {
+      font-size: 1.2em;
+      line-height: 1.6em;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="fireworks"></canvas>
+
+<div class="content">
+  <div class="balloons">
+    <div class="balloon">L</div>
+    <div class="balloon">O</div>
+    <div class="balloon">V</div>
+    <div class="balloon">E</div>
+  </div>
+
+  <h2 class="message">🎉 Happy 27<sup>th</sup> Birthday, sama yoss 🎉</h2>
+
+  <img src="aly.jpg" alt="Photo de nous deux">
+
+  <p>My love,</p>
+
+  <p>On this special day, I just want you to know how much you mean to me. </p>  
+  <p>Happy Birthday, my heart ❤.</p>
+
+  <p>Every single day by your side feels like a blessing.  
+  Your presence in my life is a treasure I will always hold close.  
+  You are my strength, my safe place, my best friend, my everything.</p>
+
+  <p>I love you madly — with a deep, wild, and endless love.  
+  I truly can’t imagine my life without you in it.</p>
+
+  <p>Thank you for existing. Thank you for being the amazing man you are.  
+  Thank you for being mine.  
+  May this new chapter of your life bring you as much happiness as you bring to me every day.</p>
+
+  <p>Words will never be enough to express how deeply I love you…</p>
+
+  <p>Happy 27th Birthday, my love 🎂❤</p>
+
+  <p>Forever and always,<br>
+  Your wife, who loves you more than anything.</p>
+</div>
+
+<script>
+const canvas = document.getElementById("fireworks");
+const ctx = canvas.getContext("2d");
+let w = canvas.width = window.innerWidth;
+let h = canvas.height = window.innerHeight;
+let fireworks = [];
+
+function Firework() {
+  this.x = Math.random() * w;
+  this.y = h;
+  this.targetY = Math.random() * h / 2;
+  this.history = [];
+  this.color = "hsl(" + Math.random() * 360 + ",100%,50%)";
+  this.exploded = false;
+  this.particles = [];
+}
+
+Firework.prototype.update = function () {
+  if (!this.exploded) {
+    this.history.push({ x: this.x, y: this.y });
+    this.y -= 5;
+    if (this.y <= this.targetY) {
+      this.exploded = true;
+      for (let i = 0; i < 100; i++) {
+        this.particles.push({
+          x: this.x,
+          y: this.y,
+          vx: Math.cos(i) * Math.random() * 5,
+          vy: Math.sin(i) * Math.random() * 5,
+          alpha: 1
+        });
+      }
+    }
+  } else {
+    this.particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.alpha -= 0.01;
+    });
+    this.particles = this.particles.filter(p => p.alpha > 0);
+  }
+};
+
+Firework.prototype.draw = function () {
+  if (!this.exploded) {
+    ctx.beginPath();
+    ctx.moveTo(this.history[0]?.x || this.x, this.history[0]?.y || this.y);
+    this.history.forEach(p => ctx.lineTo(p.x, p.y));
+    ctx.strokeStyle = this.color;
+    ctx.stroke();
+  } else {
+    this.particles.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+      ctx.fillStyle = this.color;
+      ctx.globalAlpha = p.alpha;
+      ctx.fill();
+    });
+  }
+  ctx.globalAlpha = 1;
+};
+
+function loop() {
+  ctx.fillStyle = "rgba(0,0,0,0.2)";
+  ctx.fillRect(0, 0, w, h);
+  if (Math.random() < 0.05) fireworks.push(new Firework());
+  fireworks.forEach(f => f.update());
+  fireworks.forEach(f => f.draw());
+  fireworks = fireworks.filter(f => f.particles.length > 0 || !f.exploded);
+  requestAnimationFrame(loop);
+}
+
+loop();
+
+window.addEventListener("resize", () => {
+  w = canvas.width = window.innerWidth;
+  h = canvas.height = window.innerHeight;
+});
+</script>
+
+</body>
+</html>
